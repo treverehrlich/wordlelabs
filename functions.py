@@ -68,10 +68,6 @@ def get_next_best_word(unused_list):
             worst_score = this_score
             worst_word = word
 
-
-
-
-
     print(f'{len(unused_list)} words remain')
     
     print(f'We suggest {best_word} with score {best_score}')

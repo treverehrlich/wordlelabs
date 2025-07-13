@@ -13,28 +13,10 @@ def render_main_layout():
     Initial/main skeleton of the page layout objects
     '''
 
-    allListRaw = load_all_wordle_words()
-#    allList = format_list_of_words(allListRaw)
-
-    usedListRaw = load_used_words()
-    usedList = format_list_of_words(usedListRaw)
-
-    unusedListRaw = find_unused_words(allListRaw,usedListRaw)
-#    unusedList = format_list_of_words(unusedListRaw)
-
-    best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
-    myList = format_list_of_words_scored(myListDict)
-
-    print(occurrances)
-    # print(len(myListRaw))     
-    
-    # jsonForSession = json.dumps(myListRaw)
-    # print(jsonForSession)
-
     return html.Div(children=[
 
-        dcc.Store(id="my_words", storage_type="session", data=unusedListRaw),              
-        #dcc.Store(id="my_words", storage_type="session", data=[]),              
+        dcc.Location(id="url"),  # triggers callback on load
+        dcc.Store(id="my_words", storage_type="session"),
 
         html.Div(
             children=[
@@ -56,8 +38,8 @@ def render_main_layout():
                 ], className="mainHeaderBox"),
 
                 html.Div([
-                    html.Div(children=f"Suggested word: {best_word}, score of {best_score}", className="instructionLine"),
-                    html.Div(children=f"Bravest word: {worst_word}, score of {worst_score}", className="instructionLine"),
+                    html.Div(children="Suggested best word:", id="suggestBest", className="instructionLine"),
+                    html.Div(children="Suggested worst word:", id="suggestWorst", className="instructionLine"),
                     ], id="instructionDiv"
                 ),
 
@@ -77,11 +59,11 @@ def render_main_layout():
             children=[
                 html.Div([
                     html.Div(children="Words for You",className='colHeaderText'),
-                    html.Div(children=f"Word Count: {len(unusedListRaw)}",className='colHeaderWordcount'),                                        
+                    html.Div(children="Word count:",id='headerWordcount', className='colHeaderWordcount'),                                        
                     html.Div(children="Potential remaining words based on your guesses.",className='colSubtitleText'),
                 ],   
                 className='colHeader'),
-                myList,
+                html.Div([], id='remainingWordsListScored' ,className='genericWordList'),
 
             ],
             className="col col2"
@@ -110,7 +92,17 @@ def render_main_layout():
 
                 html.Div([
                     dcc.Graph(id='chart_distro', 
-                            figure=distro_builder(occurrances),
+                            figure={
+                                "data": [],
+                                "layout": {
+                                    "xaxis": {"visible": False},
+                                    "yaxis": {"visible": False},
+                                    "annotations": [],
+                                    "paper_bgcolor": "rgba(0,0,0,0)",  # transparent background
+                                    "plot_bgcolor": "rgba(0,0,0,0)",
+                                },                                 
+                            },
+                          
                             config={'responsive': True})
                 ], id='chart_distro_div'),
 
@@ -118,7 +110,16 @@ def render_main_layout():
 
                 html.Div([
                     dcc.Graph(id='chart_histro', 
-                        figure=histo_builder(weights), 
+                            figure={
+                                "data": [],
+                                "layout": {
+                                    "xaxis": {"visible": False},
+                                    "yaxis": {"visible": False},
+                                    "annotations": [],
+                                    "paper_bgcolor": "rgba(0,0,0,0)",  # transparent background
+                                    "plot_bgcolor": "rgba(0,0,0,0)",
+                                },                                  
+                            },
                         config={'responsive': True})
                 ], id='chart_histro_div'),
 
@@ -131,18 +132,16 @@ def render_main_layout():
             children=[
                 html.Div([
                     html.Div(children="Used Wordle Words",className='colHeaderText'),
-                    html.Div(children=f"Word Count: {len(usedListRaw)}",className='colHeaderWordcount'),                      
+                    html.Div(children=f"Word Count:",id="usedWordleCount", className='colHeaderWordcount'),                      
                     html.Div(children="This list is updated only after current day's game has ended.",className='colSubtitleText'),
                 ],   
                 className='colHeader'),
-                usedList,
+                html.Div(children=[],id='usedWordleList',className='genericWordList'),
 
             ],
             className="col col4"
 
         ),             
-
-
 
     ], className='flexContainer') 
 
@@ -184,17 +183,20 @@ def box_builder(row,col):
                 maxLength=1,
                 disabled=disabledBox,
                 className="wordleBoxClass",
-                style={'background-color' : bgcolor}
+                style={'backgroundColor' : bgcolor}
             ),
     ], className="wordleBoxClassDiv")
 
 
 def format_list_of_words(thisList):
 
-    return html.Div([
-        html.Div(word) for word in thisList
-    ],className='genericWordList')
+    wordListFormatted = []
 
+    for word in thisList:
+        wordListFormatted.append(html.Div(word))
+
+    return wordListFormatted
+   
 def format_list_of_words_scored(thisListDict):
 
     thisListDict = dict(sorted(thisListDict.items(), key=lambda item: item[1]['score'], reverse=True))
@@ -204,7 +206,7 @@ def format_list_of_words_scored(thisListDict):
     for key, value in thisListDict.items():
         format_row.append(html.Div(f'{key} ({value['score']})'))
 
-    return html.Div(format_row ,className='genericWordList')
+    return format_row
 
 def distro_builder(occurrances):
 
@@ -247,13 +249,20 @@ def histo_builder(weights):
     row, col = 1, 1
 
     for i, letter in enumerate(string.ascii_lowercase):
-        # Create bar chart for current letter
-        bar = go.Bar(
-            x=[1, 2, 3, 4, 5],
-            y=weights[letter],
-            showlegend=False
-        )
-        fig.add_trace(bar, row=row, col=col)
+
+        if letter in weights:
+
+        #     y_weights = [0,0,0,0,0] # in case that letter has been ruled out already
+        # else:
+            y_weights = weights[letter]
+
+            # Create bar chart for current letter
+            bar = go.Bar(
+                x=[1, 2, 3, 4, 5],
+                y=y_weights,
+                showlegend=False
+            )
+            fig.add_trace(bar, row=row, col=col)
 
         # Advance to next subplot position
         col += 1

@@ -1,0 +1,2 @@
+YELLOW = '#E0E06C'
+GREEN = '#00AF82'
