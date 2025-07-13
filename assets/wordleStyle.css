@@ -36,21 +36,16 @@ body {
  
 }
 
-@media (max-width: 767px) {
-    .col3, .col4 {
-        display: none;
-    }
+@media (max-width: 768px) {
+  .flexContainer {
+    flex-direction: column;
+  }
 
-    .col1 { 
-        flex: 0 0 70%;
-        
-    }
-    .col2 {
-        flex: 0 0 25%;
-
-    }
-
-
+  .col {
+    flex: 0 0 100%;
+    width: 100%;
+    height: auto; /* optional: prevents full screen height on mobile */
+  }
 }
 
 .colHeader {
