@@ -11,7 +11,7 @@ body {
 /* Common styles (optional) */
 .col {
     padding: 1vw 0;
-    background-color: black;
+    background-color: red;
     text-align: center;
     height: 100vh;  
 }
@@ -36,6 +36,8 @@ body {
  
 }
 
+/* mobile layout directives */
+
 @media (max-width: 768px) {
   .flexContainer {
     flex-direction: column;
@@ -47,6 +49,9 @@ body {
     height: auto; /* optional: prevents full screen height on mobile */
   }
 }
+
+/* END mobile layout directives */
+
 
 .colHeader {
     height: 20vh;
@@ -128,9 +133,10 @@ body {
 
 .gridAreaContainer {
     display: flex;
-    justify-content: right;
+    justify-content: center;
     width: 100%;
     float: left;
+    background-color: blue;
     
 
 }
@@ -143,6 +149,8 @@ body {
     
     clear: both;
     margin: 2vh 0 0 0;
+    background-color: yellow;
+    width: 95%;
 
 
 }
@@ -157,15 +165,16 @@ body {
 
 .wordleBoxClassDiv {
     float: left;
-    background-color: black;
+    background-color: green;
     padding: 0;
     margin: 0;
+    width: 20%;    
 
 }
 
 .wordleBoxClass {
     height: 9vh;
-    width: 5vw;
+    width: 100%;
     padding: 1vh 1vw;
     margin: 0.25vh 0.25vw;
     font-size: 5vh;
