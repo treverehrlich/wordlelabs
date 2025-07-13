@@ -36,11 +36,22 @@ body {
  
 }
 
-/* .col5 { 
-    flex: 0 0 15%; 
+@media (max-width: 767px) {
+    .col3, .col4 {
+        display: none;
+    }
+
+    .col1 { 
+        flex: 0 0 70%;
+        
+    }
+    .col2 {
+        flex: 0 0 25%;
+
+    }
 
 
-} */
+}
 
 .colHeader {
     height: 20vh;
