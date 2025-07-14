@@ -47,6 +47,11 @@ body {
     width: 100%;
     height: auto; /* optional: prevents full screen height on mobile */
   }
+
+    .wordDivsInList {
+        float: left;
+    }
+
 }
 
 /* END mobile layout directives */
@@ -218,6 +223,13 @@ body {
     width: 100%;
     margin: 1vh 1vw;
     padding: 0vh;
+
+}
+
+.wordDivsInList {
+    clear: both;
+    width: 100%;
+    float: left;
 
 }
 
