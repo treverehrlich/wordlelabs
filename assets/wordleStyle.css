@@ -51,6 +51,8 @@ body {
     .wordDivsInList {
         float: left;
         clear: none !important;
+        width: auto !important;
+        margin: 0 5px;
     }
 
 }

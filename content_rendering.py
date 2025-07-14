@@ -193,7 +193,7 @@ def format_list_of_words(thisList):
     wordListFormatted = []
 
     for word in thisList:
-        wordListFormatted.append(html.Div(word))
+        wordListFormatted.append(html.Div(word, className="wordDivsInList"))
 
     return wordListFormatted
    
@@ -204,7 +204,8 @@ def format_list_of_words_scored(thisListDict):
     format_row = []
 
     for key, value in thisListDict.items():
-        format_row.append(html.Div(f'{key} ({value['score']})',className="wordDivsInList"))
+        format_row.append(html.Div(f'{key}',className="wordDivsInList"))
+        #format_row.append(html.Div(f'{key} ({value['score']})',className="wordDivsInList"))
 
     return format_row
 
