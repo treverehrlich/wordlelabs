@@ -4,42 +4,6 @@ from collections import Counter
 from bs4 import BeautifulSoup
 import requests
 
-def old_main():
-
-    wordle_list = load_all_wordle_words()
-
-    used_list = load_used_words()
-
-    unused_list = find_unused_words(wordle_list,used_list)
-
-    list_knowns = []
-
-    while(1==1):
-
-        get_next_best_word(unused_list)
-
-        option = input("1) remove letter 2) contains letter 3) add known location: ")
-
-        match int(option):
-            case 1:
-                letter = input("ok what is the letter to remove altogether? ")
-                unused_list = remove_letter(unused_list, letter)
-                list_knowns.append(f"Has no '{letter}'")
-
-            case 2:
-                letter = input("ok what is the letter you know about? ")
-                location = input("what is the location where the letter is NOT (0-based index? ")
-                unused_list = known_letter_unknown_location(unused_list, letter, int(location))
-                list_knowns.append(f"Has '{letter}' but not in loc '{location}'")
-
-            case 3:
-                letter = input("ok what is the letter you know about? ")
-                location = input("what is the location of that letter in the word (0-based index? ")
-                unused_list = known_letter_location(unused_list, letter, int(location))
-                list_knowns.append(f"Has located '{letter}' in loc '{location}'")
-
-        print(list_knowns)
-
 def get_next_best_word(unused_list):
 
     letter_occurrences_dict = letter_count(unused_list)

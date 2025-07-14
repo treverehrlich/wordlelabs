@@ -29,9 +29,7 @@ def render_main_layout():
 
                     html.Div(children=[
                         html.Div(id='title', className='mainTitle',children="World's Best Wordle Solver"),
-                        html.Div(className='mainTaglines',children="Addicted to Wordle like us?"),
-                        html.Div(className='mainTaglines',children="Consistently make better guesses!"),
-                        html.Div(className='mainTaglines',children="Easily beat your friends!"),                    
+                        html.Div(className='mainTaglines',children="Use these tools to consistently make better guesses, and easily beat your friends! We LOVE Wordle!"),                    
 
                     ], className="mainTitleBox")                    
 
@@ -207,7 +205,13 @@ def format_list_of_words_scored(thisListDict):
         format_row.append(html.Div(f'{key}',className="wordDivsInList"))
         #format_row.append(html.Div(f'{key} ({value['score']})',className="wordDivsInList"))
 
-    return format_row
+    # First 3 values
+    first_three = list(thisListDict.keys())[:3]
+
+    # Last 3 values
+    last_three = list(thisListDict.keys())[-3:]
+
+    return format_row, first_three, last_three
 
 def distro_builder(occurrances):
 

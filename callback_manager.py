@@ -36,7 +36,7 @@ def initialize_everything(url):
 #    unusedList = format_list_of_words(unusedListRaw)
 
     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
-    myList = format_list_of_words_scored(myListDict)
+    myList, best_three, worst_three = format_list_of_words_scored(myListDict)
 
     print(occurrances)
     # print(len(myListRaw))     
@@ -44,8 +44,8 @@ def initialize_everything(url):
     # jsonForSession = json.dumps(myListRaw)
     # print(jsonForSession)
 
-    suggestBest = f"Suggested word: {best_word}, score of {best_score}"
-    suggestWorst = f"Bravest word: {worst_word}, score of {worst_score}"
+    suggestBest = f"Best three guess words: {', '.join(best_three)}"
+    suggestWorst = f"Bravest three words: {', '.join(worst_three)}"
 
     headerWordCount = f"Word Count: {len(unusedListRaw)}"
 
@@ -149,13 +149,16 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
         print(f'unused list is now {len(unusedListRaw)} words left...')
 
     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
-    myList = format_list_of_words_scored(myListDict)
+    myList, best_three, worst_three = format_list_of_words_scored(myListDict)
+
+    suggestBest = f"Best three guess words: {', '.join(best_three)}"
+    suggestWorst = f"Bravest three words: {', '.join(worst_three)}"    
 
     chart_distro = distro_builder(occurrances)
     chart_histro = histo_builder(weights)
 
-    suggestBest = f"Suggested word: {best_word}, score of {best_score}"
-    suggestWorst = f"Bravest word: {worst_word}, score of {worst_score}"
+    # suggestBest = f"Suggested word: {best_word}, score of {best_score}"
+    # suggestWorst = f"Bravest word: {worst_word}, score of {worst_score}"
 
     print(last_guess_word)
     print(last_guess_colors)
