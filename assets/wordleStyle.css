@@ -50,6 +50,7 @@ body {
 
     .wordDivsInList {
         float: left;
+        clear: none;
     }
 
 }
