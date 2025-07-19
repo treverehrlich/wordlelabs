@@ -151,15 +151,15 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
 
         if last_guess_colors[letter_location]['backgroundColor'] == GREEN: # got a hit
             print(f'\n green')
-            unusedListRaw = known_letter_location(unusedListRaw, last_guess_word[letter_location], letter_location)
+            unusedListRaw = known_letter_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
             print(f'\n new len is {len(unusedListRaw)}')
         elif last_guess_colors[letter_location]['backgroundColor'] == YELLOW: # partial hit
             print(f'\n yellow')
-            unusedListRaw = known_letter_unknown_location(unusedListRaw, last_guess_word[letter_location], letter_location)
+            unusedListRaw = known_letter_unknown_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
             print(f'\n new len is {len(unusedListRaw)}')
         else: # remove letter
             print(f'\n gray')
-            unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location])  
+            unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location].lower())  
             print(f'\n new len is {len(unusedListRaw)}')
 
         print(f'unused list is now {len(unusedListRaw)} words left...')
