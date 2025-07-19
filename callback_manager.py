@@ -153,7 +153,7 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
     myList, best_three, worst_three = format_list_of_words_scored(myListDict)
 
-    #suggestBest = f"Best three guess words: {', '.join(best_three)}"
+    suggestBest = f"Best three guess words: {', '.join(best_three)}"
     suggestWorst = f"Bravest three words: {', '.join(worst_three)}"    
 
     chart_distro = distro_builder(occurrances)
