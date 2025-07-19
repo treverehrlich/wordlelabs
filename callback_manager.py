@@ -185,8 +185,7 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
     print(last_guess_colors)
 
 
-    headerWordCount = f"Word Count: {len(unusedListRaw)} (was {initial_unused_count})"
-
+    headerWordCount = f"Word Count: {len(unusedListRaw)}"
 
     # Generate a random filename
     filename = f"{uuid.uuid4().hex}.csv"
