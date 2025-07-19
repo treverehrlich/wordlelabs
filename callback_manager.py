@@ -80,6 +80,8 @@ def initialize_everything(url):
 )
 def read_all_fields(n_clicks, value, style, unusedListRaw):
 
+    initial_unused_count = len(unusedListRaw)
+
     print(n_clicks)
     print(value)
     print(style)
@@ -151,7 +153,7 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
     myList, best_three, worst_three = format_list_of_words_scored(myListDict)
 
-    suggestBest = f"Best three guess words: {', '.join(best_three)}"
+    #suggestBest = f"Best three guess words: {', '.join(best_three)}"
     suggestWorst = f"Bravest three words: {', '.join(worst_three)}"    
 
     chart_distro = distro_builder(occurrances)
@@ -164,7 +166,7 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
     print(last_guess_colors)
 
 
-    headerWordCount = f"Word Count: {len(unusedListRaw)}"
+    headerWordCount = f"Word Count: {len(unusedListRaw)} (was {initial_unused_count})"
 
     return '1', disabled_list, style_list, unusedListRaw, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro
 
