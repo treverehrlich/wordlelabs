@@ -3,6 +3,8 @@ from serving import app
 from content_rendering import *
 from functions import *
 from constants import *
+import csv
+import uuid
 
 def get_main_layout():
     return render_main_layout()
@@ -80,11 +82,15 @@ def initialize_everything(url):
 )
 def read_all_fields(n_clicks, value, style, unusedListRaw):
 
-    initial_unused_count = len(unusedListRaw)
 
     print(n_clicks)
     print(value)
     print(style)
+
+
+    data = f'{n_clicks}, {value}, {style}'
+
+    data += f'\n unused list raw len: {len(unusedListRaw)}'
 
     last_full_word_index = -1
 
@@ -109,6 +115,9 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
         last_full_word_index = 5
     
     print(last_full_word_index)
+
+    data += f'\n{str(last_full_word_index)}'
+
 
     # disable all rows that filled or empty; enable the current word cells
 
@@ -139,16 +148,26 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
                 
     # next we update the list of remaining words, based on the previous word input (letters and colors)
 
+    data += f'\n{last_guess_word}, {last_guess_colors}'
+
     for letter_location in range(5):
 
         if last_guess_colors[letter_location]['backgroundColor'] == GREEN: # got a hit
+            data += f'\n green'
             unusedListRaw = known_letter_location(unusedListRaw, last_guess_word[letter_location], letter_location)
+            data += f'\n new len is {len(unusedListRaw)}'
         elif last_guess_colors[letter_location]['backgroundColor'] == YELLOW: # partial hit
+            data += f'\n yellow'
             unusedListRaw = known_letter_unknown_location(unusedListRaw, last_guess_word[letter_location], letter_location)
+            data += f'\n new len is {len(unusedListRaw)}'
         else: # remove letter
-            unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location])            
+            data += f'\n gray'
+            unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location])  
+            data += f'\n new len is {len(unusedListRaw)}'      
 
         print(f'unused list is now {len(unusedListRaw)} words left...')
+
+    data += f'unused list is now {len(unusedListRaw)} words left...'       
 
     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
     myList, best_three, worst_three = format_list_of_words_scored(myListDict)
@@ -167,6 +186,16 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
 
 
     headerWordCount = f"Word Count: {len(unusedListRaw)} (was {initial_unused_count})"
+
+
+    # Generate a random filename
+    filename = f"{uuid.uuid4().hex}.csv"
+
+    # Write to CSV
+    with open(filename, mode="w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerows(data)
+
 
     return '1', disabled_list, style_list, unusedListRaw, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro
 
