@@ -40,7 +40,7 @@ used_words = [word.lower() for word in answers]
 
 print(f"loaded {len(used_words)} used words")
 
-with open('assets/scraped.csv', 'w', newline='') as f:
+with open('/home/ec2-user/wordlelabs/assets/scraped.csv', 'w', newline='') as f:
     writer = csv.writer(f)
     for item in used_words:
         writer.writerow([item])  # Wrap in list to write one item per row

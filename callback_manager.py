@@ -5,6 +5,7 @@ from functions import *
 from constants import *
 import csv
 import uuid
+import time
 
 def get_main_layout():
     return render_main_layout()
@@ -26,6 +27,7 @@ def get_main_layout():
 
 def initialize_everything(url):
 
+    start_time = time.time()
     allListRaw = load_all_wordle_words()
 #    allList = format_list_of_words(allListRaw)
 
@@ -56,6 +58,8 @@ def initialize_everything(url):
 
     usedWordleCount = f"Word Count: {len(usedListRaw)}"
 
+    print(f"took {time.time() - start_time} secs to initialize")
+
     return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, usedList, unusedListRaw
 
 #process what happens when people click enter on each completed word
@@ -85,7 +89,6 @@ def read_all_fields(n_clicks, value, style, unusedListRaw):
     print(n_clicks)
     print(value)
     print(style)
-
 
     print(f'\n unused list raw len: {len(unusedListRaw)}')
 

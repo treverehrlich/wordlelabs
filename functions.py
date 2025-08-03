@@ -24,7 +24,7 @@ def get_next_best_word(unused_list):
     for word in unused_list:
         this_score = calculate_word_score(word, letter_occurrences_dict, letter_position_weights)
         myListDict[word] = {"score" : this_score}
-        print(f"word: {word} == {this_score}")
+        #print(f"word: {word} == {this_score}")
         if this_score > best_score:
             best_score = this_score
             best_word = word
@@ -149,7 +149,7 @@ def known_letter_unknown_location(unused_list, letter, location):
     # Use a list comprehension to filter out words
     unused_list = [word for word in unused_list if letter in word and word[location] != letter]
 
-    print(unused_list)
+    #print(unused_list)
     print(f"added letter {letter} but not at position {location}; now {len(unused_list)} words remain")
 
     return unused_list
@@ -158,7 +158,7 @@ def known_letter_location(unused_list, letter, location):
     # Keep only words where the letter is at the given position
     unused_list = [word for word in unused_list if len(word) > location and word[location] == letter]
 
-    print(unused_list)
+    #print(unused_list)
     print(f"added letter {letter} at position {location} and now {len(unused_list)} words remain")
 
     return unused_list
@@ -168,45 +168,18 @@ def remove_letter(unused_list, letter):
     # Keep only words that do NOT contain the letter
     unused_list = [word for word in unused_list if letter not in word]
 
-    print(unused_list)
+    #print(unused_list)
     print(f"removed letter {letter} and now {len(unused_list)} words remain")
 
     return unused_list
 
 def load_used_words():
 
-
-# URL to scrape
-    url = "https://www.rockpapershotgun.com/wordle-past-answers"
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
-    }
-
-    # Fetch the page
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()  # Raises an error if request failed
-
-    # Parse with BeautifulSoup
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    # Step 1: Find the <h2> that says "All Wordle answers"
-    h2_element = soup.find("h2", string="All Wordle answers")
-
-    # Step 2: Find the next <ul> after that <h2>
-    if h2_element:
-        ul_element = h2_element.find_next("ul")
-        if ul_element:
-            # Step 3: Get all <li> inside that <ul>
-            li_elements = ul_element.find_all("li")
-            # Step 4: Extract text from each <li>
-            answers = [li.get_text(strip=True) for li in li_elements]
-            #print(answers)
-        else:
-            print("No <ul> found after the <h2>.")
-    else:
-        print("No <h2> with 'All Wordle answers' found.")
-
-    used_words = [word.lower() for word in answers]
+    print("loading all words...")
+    with open('assets/scraped.csv', newline='') as f:
+        reader = csv.reader(f)
+        used_words = [row[0] for row in reader if row]  # skip empty rows
+    print("finished pulling all words into a list!")
 
     print(f"loaded {len(used_words)} used words")
 
