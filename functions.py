@@ -3,6 +3,7 @@ import string
 from collections import Counter
 from bs4 import BeautifulSoup
 import requests
+import csv
 
 def get_next_best_word(unused_list):
 
@@ -214,15 +215,19 @@ def load_used_words():
 
 def load_all_wordle_words():
 
-    with open('assets/all_wordle_words.txt', 'r') as file:
-        file_content = file.read().replace('\n', '')
+    print("loading all words...")
+    with open('assets/all_wordle_words.csv', newline='') as f:
+        reader = csv.reader(f)
+        wordle_list = [row[0] for row in reader if row]  # skip empty rows
+    print("finished pulling all words into a list!")
 
-    wordle_list = file_content.split(' ')
-    wordle_list = [word.lower() for word in wordle_list]
+    # wordle_list = file_content.split(' ')
+    # wordle_list = [word.lower() for word in wordle_list]
 
-    wordle_list = process_doubled_words(wordle_list)
+    #wordle_list = process_doubled_words(wordle_list)
 
-    print(f"loaded all {len(wordle_list)} wordle words")
+    # print(wordle_list)
+    # print(f"loaded all {len(wordle_list)} wordle words")
 
     return wordle_list
 
