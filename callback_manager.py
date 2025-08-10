@@ -55,59 +55,59 @@ def update_text(n_clicks_list, data):
         return data + key_name
 
 
-# @app.callback(
-#     Output('suggestBest', 'children'),
-#     Output('suggestWorst', 'children'),
-#     Output('headerWordcount', 'children'),
-#     Output('remainingWordsListScored', 'children'),
-#     Output('chart_distro', 'figure'),
-#     Output('chart_histro', 'figure'),
-#     Output('usedWordleCount', 'children'),
-#     Output('usedWordleList','children'),
-#     Output('my_words','data'),
-#     Output('my_letters','data', allow_duplicate=True),    
-#     Input("url", "pathname"),
-#     prevent_initial_call=False  # allow it to run on load
-# )
+@app.callback(
+    Output('suggestBest', 'children'),
+    Output('suggestWorst', 'children'),
+    Output('headerWordcount', 'children'),
+    Output('remainingWordsListScored', 'children'),
+    Output('chart_distro', 'figure'),
+    Output('chart_histro', 'figure'),
+    Output('usedWordleCount', 'children'),
+    Output('usedWordleList','children'),
+    Output('my_words','data'),
+    Output('my_letters','data', allow_duplicate=True),    
+    Input("url", "pathname"),
+    prevent_initial_call=False  # allow it to run on load
+)
 
-# def initialize_everything(url):
+def initialize_everything(url):
 
-#     start_time = time.time()
-#     allListRaw = load_all_wordle_words()
-# #    allList = format_list_of_words(allListRaw)
+    start_time = time.time()
+    allListRaw = load_all_wordle_words()
+#    allList = format_list_of_words(allListRaw)
 
-#     print("scraping used words...")
-#     usedListRaw = load_used_words()
-#     print("finished scraping!")
-#     usedList = format_list_of_words(usedListRaw)
+    print("scraping used words...")
+    usedListRaw = load_used_words()
+    print("finished scraping!")
+    usedList = format_list_of_words(usedListRaw)
 
-#     unusedListRaw = find_unused_words(allListRaw,usedListRaw)
-# #    unusedList = format_list_of_words(unusedListRaw)
+    unusedListRaw = find_unused_words(allListRaw,usedListRaw)
+#    unusedList = format_list_of_words(unusedListRaw)
 
-#     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
-#     myList, best_three, worst_three = format_list_of_words_scored(myListDict)
+    best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
+    myList, best_three, worst_three = format_list_of_words_scored(myListDict)
 
-#     print(occurrances)
-#     # print(len(myListRaw))     
+    print(occurrances)
+    # print(len(myListRaw))     
     
-#     # jsonForSession = json.dumps(myListRaw)
-#     # print(jsonForSession)
+    # jsonForSession = json.dumps(myListRaw)
+    # print(jsonForSession)
 
-#     suggestBest = f"Best three guess words: {', '.join(best_three)}"
-#     suggestWorst = f"Bravest three words: {', '.join(worst_three)}"
+    suggestBest = f"Best three guess words: {', '.join(best_three)}"
+    suggestWorst = f"Bravest three words: {', '.join(worst_three)}"
 
-#     headerWordCount = f"Word Count: {len(unusedListRaw)}"
+    headerWordCount = f"Word Count: {len(unusedListRaw)}"
 
-#     chart_distro = distro_builder(occurrances)
-#     chart_histro = histo_builder(weights)
+    chart_distro = distro_builder(occurrances)
+    chart_histro = histo_builder(weights)
 
-#     usedWordleCount = f"Word Count: {len(usedListRaw)}"
+    usedWordleCount = f"Word Count: {len(usedListRaw)}"
 
-#     print(f"took {time.time() - start_time} secs to initialize")
+    print(f"took {time.time() - start_time} secs to initialize")
 
-#     my_letters = ''
+    my_letters = ''
 
-#     return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, usedList, unusedListRaw, my_letters
+    return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, usedList, unusedListRaw, my_letters
 
 #process what happens when people click enter on each completed word
 
