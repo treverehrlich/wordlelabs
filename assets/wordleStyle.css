@@ -146,27 +146,15 @@ body {
     background-color: green;
 }
 
-
-.keyboardContainerParent {
-
-    justify-content: center;
-    width: 100%;
-    float: left;
-    background-color: red;
-    margin: 0;
-    text-align: center;
-
-}
-
 .keyboardContainer {
 
     display: flex;
     flex-direction: column;
     gap: 0.25em;
-    width: 100%;
+    width: 90%;
     height: 100%;
-    max-width: 900px; /* optional limit */
     margin: auto;
+    background-color: red;
 
 }
 

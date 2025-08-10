@@ -47,8 +47,7 @@ def render_main_layout():
 
                 html.Div(children=grid_builder(), className='gridAreaContainer'),
 
-
-                html.Div(children=keyboard_builder() ,className='keyboardContainerParent'),
+                keyboard_builder(),
 
                 #dcc.Input(id='dummy_input', value='', autoFocus=True, style={'opacity': 50, 'position': 'absolute'}),
                 #html.Div(children="test", id="output"),
@@ -157,17 +156,13 @@ def keyboard_builder():
     row3 = ["Backspace"] + list("ZXCVBNM") + ["Enter"]
 
     return html.Div(
-        [
-            html.Div(
                 [
                     make_row(row1),
                     make_row(row2),
                     make_row(row3)
                 ],
                 className="keyboardContainer"
-            ),
-        ]
-    )    
+            )
 
 def make_row(keys):
 
