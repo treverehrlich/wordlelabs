@@ -23,7 +23,7 @@
 .keyboard-row {
     display: flex;
     gap: 0.5em;
-    margin: 0.25vh 1vw;
+    margin: 0.25vh 0;
 
 }
 
