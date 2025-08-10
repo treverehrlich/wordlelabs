@@ -131,20 +131,20 @@ def render_main_layout():
 
         ),                
 
-        # html.Div(
-        #     children=[
-        #         html.Div([
-        #             html.Div(children="Used Wordle Words",className='colHeaderText'),
-        #             html.Div(children=f"Word Count:",id="usedWordleCount", className='colHeaderWordcount'),                      
-        #             html.Div(children="This list is updated only after current day's game has ended.",className='colSubtitleText'),
-        #         ],   
-        #         className='colHeader'),
-        #         html.Div(children=[],id='usedWordleList',className='genericWordList'),
+        html.Div(
+            children=[
+                html.Div([
+                    html.Div(children="Used Wordle Words",className='colHeaderText'),
+                    html.Div(children=f"Word Count:",id="usedWordleCount", className='colHeaderWordcount'),                      
+                    html.Div(children="This list is updated only after current day's game has ended.",className='colSubtitleText'),
+                ],   
+                className='colHeader'),
+                html.Div(children=[],id='usedWordleList',className='genericWordList'),
 
-        #     ],
-        #     className="col col4"
+            ],
+            className="col col4"
 
-        # ),             
+        ),             
 
     ], className='flexContainer') 
 
