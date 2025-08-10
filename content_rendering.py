@@ -1,4 +1,5 @@
 from dash import Input, Output, State, html, dcc
+from dash_extensions import EventListener, Keyboard
 from datetime import datetime
 from functions import *
 import json
@@ -15,8 +16,10 @@ def render_main_layout():
 
     return html.Div(children=[
 
+        Keyboard(id="key-listener"),
         dcc.Location(id="url"),  # triggers callback on load
         dcc.Store(id="my_words", storage_type="session"),
+        dcc.Store(id="my_letters", storage_type="session"),        
 
         html.Div(
             children=[
@@ -42,10 +45,13 @@ def render_main_layout():
                 ),
 
 
-                html.Div(children=grid_builder()
-                , className='gridAreaContainer'),
+                html.Div(children=grid_builder(), className='gridAreaContainer'),
 
-                html.Div(children="", id="output_div"),
+
+                html.Div(children=keyboard_builder() ,className='keyboardContainerParent'),
+
+                #dcc.Input(id='dummy_input', value='', autoFocus=True, style={'opacity': 50, 'position': 'absolute'}),
+                #html.Div(children="test", id="output"),
 
 
             ],
@@ -143,6 +149,41 @@ def render_main_layout():
 
     ], className='flexContainer') 
 
+def keyboard_builder():
+
+    # QWERTY layout rows
+    row1 = list("QWERTYUIOP")
+    row2 = list("ASDFGHJKL")
+    row3 = ["Backspace"] + list("ZXCVBNM") + ["Enter"]
+
+    return html.Div(
+        [
+            html.Div(
+                [
+                    make_row(row1),
+                    make_row(row2),
+                    make_row(row3)
+                ],
+                className="keyboardContainer"
+            ),
+        ]
+    )    
+
+def make_row(keys):
+
+    return html.Div(
+        [
+            html.Button(
+                "Bksp" if key == "Backspace" else ("Enter" if key == "Enter" else key),
+                id={"type": "key-btn", "index": key},
+                n_clicks=0,
+                className="keyboard-key special-key" if key in ["Backspace", "Enter"] else "keyboard-key"
+            )
+            for key in keys
+        ],
+        className="keyboard-row"
+    )
+
 
 
 def grid_builder():
@@ -166,20 +207,16 @@ def row_builder(row):
 
 def box_builder(row,col):
 
-    autoFocusBoolean=True if (row == 0 and col == 0) else False
-    disabledBox=True if (row > 0) else False
+    autoFocusBoolean = False
+    # autoFocusBoolean=True if (row == 0 and col == 0) else False
+    #disabledBox=True if (row > 0) else False
+    disabledBox = True
 
     bgcolor = '#555' if row == 0 else '#333'
 
     return html.Div(id={"type" : "wordle_letter_div", "index" : f'{row}_{col}'}, children=[
-        dcc.Input(
+        html.Div(
                 id={"type" : "wordle_letter", "index" : f'{row}_{col}'},
-                type='text',
-                value='',
-                autoFocus=autoFocusBoolean,
-                autoComplete="off",
-                maxLength=1,
-                disabled=disabledBox,
                 className="wordleBoxClass",
                 style={'backgroundColor' : bgcolor}
             ),

@@ -143,38 +143,82 @@ body {
     justify-content: center;
     width: 100%;
     float: left;
+    background-color: green;
 }
 
+
+.keyboardContainerParent {
+
+    justify-content: center;
+    width: 100%;
+    float: left;
+    background-color: red;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+
+}
+
+.keyboardContainer {
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+    width: 100%;
+    height: 100%;
+    max-width: 900px; /* optional limit */
+    margin: auto;
+
+}
 
 /*    WORDLE GRID   */
 
 .wordleGridClassDiv {    
     clear: both;
     margin: 2vh 0 0 0;
-    width: 95%;
-    background-color: black;
+    width: 65%;
+    background-color: red;
 }
 
 .wordleRowClassDiv {
 
+    display: flex;
+    flex: 1; /* each row gets equal height */
+    gap: 0.25em;
+    margin: 0.5vh;
+
+    /*
     float: left;
     clear: both;
-
+*/
 }
 
 
 .wordleBoxClassDiv {
-    float: left;
+
+    flex: 1; /* each item in a row gets equal width */
+    aspect-ratio: 1 / 1; /* keep them square */
+    background-color: #555;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease, transform 0.05s ease;
+
+/*    float: left;
     padding: 0;
     margin: 0;
     width: 20%;  
     background-color: black;  
-
+*/
 }
 
 .wordleBoxClass {
-    height: 9vh;
-    width: 100%;
+  /*  height: 10vh;
+    width: 10vh;
     padding: 1vh 1vw;
     margin: 0.25vh 0.25vw;
     font-size: 5vh;
@@ -182,7 +226,7 @@ body {
     text-align: center;
     background-color: #555;
     border: none;
-    color: white;
+    color: white;  */
 }
 
 #instructionDiv {
