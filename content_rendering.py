@@ -58,20 +58,20 @@ def render_main_layout():
 
         ),
 
-        # html.Div(
-        #     children=[
-        #         html.Div([
-        #             html.Div(children="Words for You",className='colHeaderText'),
-        #             html.Div(children="Word count:",id='headerWordcount', className='colHeaderWordcount'),                                        
-        #             html.Div(children="Potential remaining words based on your guesses.",className='colSubtitleText'),
-        #         ],   
-        #         className='colHeader'),
-        #         html.Div([], id='remainingWordsListScored' ,className='genericWordList'),
+        html.Div(
+            children=[
+                html.Div([
+                    html.Div(children="Words for You",className='colHeaderText'),
+                    html.Div(children="Word count:",id='headerWordcount', className='colHeaderWordcount'),                                        
+                    html.Div(children="Potential remaining words based on your guesses.",className='colSubtitleText'),
+                ],   
+                className='colHeader'),
+                html.Div([], id='remainingWordsListScored' ,className='genericWordList'),
 
-        #     ],
-        #     className="col col2"
+            ],
+            className="col col2"
 
-        # ),
+        ),
 
         # html.Div(
         #     children=[
