@@ -88,48 +88,48 @@ def render_main_layout():
 
         # ),   
 
-        # html.Div(
-        #     children=[
+        html.Div(
+            children=[
 
-        #         html.Div(children="Letter Popularity",className='colHeaderText'),
+                html.Div(children="Letter Popularity",className='colHeaderText'),
 
-        #         html.Div([
-        #             dcc.Graph(id='chart_distro', 
-        #                     figure={
-        #                         "data": [],
-        #                         "layout": {
-        #                             "xaxis": {"visible": False},
-        #                             "yaxis": {"visible": False},
-        #                             "annotations": [],
-        #                             "paper_bgcolor": "rgba(0,0,0,0)",  # transparent background
-        #                             "plot_bgcolor": "rgba(0,0,0,0)",
-        #                         },                                 
-        #                     },
+                html.Div([
+                    dcc.Graph(id='chart_distro', 
+                            figure={
+                                "data": [],
+                                "layout": {
+                                    "xaxis": {"visible": False},
+                                    "yaxis": {"visible": False},
+                                    "annotations": [],
+                                    "paper_bgcolor": "rgba(0,0,0,0)",  # transparent background
+                                    "plot_bgcolor": "rgba(0,0,0,0)",
+                                },                                 
+                            },
                           
-        #                     config={'responsive': True})
-        #         ], id='chart_distro_div'),
+                            config={'responsive': True})
+                ], id='chart_distro_div'),
 
-        #         html.Div(children="Letter Positions",className='colHeaderText'),
+                html.Div(children="Letter Positions",className='colHeaderText'),
 
-        #         html.Div([
-        #             dcc.Graph(id='chart_histro', 
-        #                     figure={
-        #                         "data": [],
-        #                         "layout": {
-        #                             "xaxis": {"visible": False},
-        #                             "yaxis": {"visible": False},
-        #                             "annotations": [],
-        #                             "paper_bgcolor": "rgba(0,0,0,0)",  # transparent background
-        #                             "plot_bgcolor": "rgba(0,0,0,0)",
-        #                         },                                  
-        #                     },
-        #                 config={'responsive': True})
-        #         ], id='chart_histro_div'),
+                html.Div([
+                    dcc.Graph(id='chart_histro', 
+                            figure={
+                                "data": [],
+                                "layout": {
+                                    "xaxis": {"visible": False},
+                                    "yaxis": {"visible": False},
+                                    "annotations": [],
+                                    "paper_bgcolor": "rgba(0,0,0,0)",  # transparent background
+                                    "plot_bgcolor": "rgba(0,0,0,0)",
+                                },                                  
+                            },
+                        config={'responsive': True})
+                ], id='chart_histro_div'),
 
-        #     ],
-        #     className="col col3"
+            ],
+            className="col col3"
 
-        # ),                
+        ),                
 
         # html.Div(
         #     children=[
