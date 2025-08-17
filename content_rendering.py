@@ -20,6 +20,11 @@ def render_main_layout():
         dcc.Location(id="url"),  # triggers callback on load
         dcc.Store(id="my_words", storage_type="session"),
         dcc.Store(id="my_letters", storage_type="session"),        
+        dcc.Store(id="enter_flag", storage_type="session"),                
+        dcc.Store(id="backspace_flag", storage_type="session"),           
+        dcc.Store(id="new_letter_flag", storage_type="session"),           
+        dcc.Store(id="completed_word_index", storage_type="session"),           
+
 
         html.Div(
             children=[
@@ -39,8 +44,9 @@ def render_main_layout():
                 ], className="mainHeaderBox"),
 
                 html.Div([
-                    html.Div(children="Suggested best word:", id="suggestBest", className="instructionLine"),
-                    html.Div(children="Suggested worst word:", id="suggestWorst", className="instructionLine"),
+                    html.Div(children="How to use: pick one of our suggested words, then enter Wordle's response below: type the letters, and tap for colors. Then we'll give you the next best word, and so on.", className="instructionLine"),
+                    html.Div(children="Suggested best words:", id="suggestBest", className="suggestionsLine"),
+                    html.Div(children="Bravest words (try if you dare!):", id="suggestWorst", className="suggestionsLine"),
                     ], id="instructionDiv"
                 ),
 
@@ -63,7 +69,7 @@ def render_main_layout():
                 html.Div([
                     html.Div(children="Words for You",className='colHeaderText'),
                     html.Div(children="Word count:",id='headerWordcount', className='colHeaderWordcount'),                                        
-                    html.Div(children="Potential remaining words based on your guesses.",className='colSubtitleText'),
+                    html.Div(children="Remaining words based on your guesses, sorted best to worst.",className='colSubtitleText'),
                 ],   
                 className='colHeader'),
                 html.Div([], id='remainingWordsListScored' ,className='genericWordList'),
@@ -202,20 +208,18 @@ def row_builder(row):
 
 def box_builder(row,col):
 
-    autoFocusBoolean = False
+    #autoFocusBoolean = False
     # autoFocusBoolean=True if (row == 0 and col == 0) else False
     #disabledBox=True if (row > 0) else False
-    disabledBox = True
+    #disabledBox = True
 
     bgcolor = '#555' if row == 0 else '#333'
 
-    return html.Div(id={"type" : "wordle_letter_div", "index" : f'{row}_{col}'}, children=[
-        html.Div(
-                id={"type" : "wordle_letter", "index" : f'{row}_{col}'},
-                className="wordleBoxClass",
-                style={'backgroundColor' : bgcolor}
-            ),
-    ], className="wordleBoxClassDiv")
+    return html.Div(
+        id={"type" : "wordle_letter", "index" : f'{row}_{col}'}
+        ,children=[]
+        ,style={'backgroundColor' : bgcolor}
+        ,className="wordleBoxClassDiv")
 
 
 def format_list_of_words(thisList):

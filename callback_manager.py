@@ -10,51 +10,6 @@ import time
 def get_main_layout():
     return render_main_layout()
 
-# wrapper to handle/catch keypresses from the physical keyboard
-@app.callback(
-    Output("my_letters", "data", allow_duplicate=True),
-    Input("key-listener", "n_keydowns"),
-    Input("key-listener", "keydown"),
-    State("my_letters", "data"),    
-)
-def on_keypress(n, key, data):
-
-    keypressed = key['key']
-
-    print(f"Key #{n}: {keypressed}, stored strokes = {data}")
-
-    if len(keypressed) == 1 and keypressed.isalpha():
-        return str(data) + str(keypressed.upper())
-    elif keypressed == 'Backspace':
-        if len(data) > 0:
-            return data[:-1] 
-        else:
-            return no_update
-    return no_update
-
-# handle input from the virtual on-screen keyboard
-@app.callback(
-    Output("my_letters", "data", allow_duplicate=True),
-    Input({"type": "key-btn", "index": ALL}, "n_clicks"),
-    State("my_letters", "data"),
-    prevent_initial_call=True
-)
-def update_text(n_clicks_list, data):
-    ctx = callback_context
-    if not ctx.triggered:
-        return data
-
-    key_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    key_name = eval(key_id)["index"]
-
-    if key_name == "Backspace":
-        return data[:-1]
-    elif key_name == "Enter":
-        return data
-    else:
-        return data + key_name
-
-
 @app.callback(
     Output('suggestBest', 'children'),
     Output('suggestWorst', 'children'),
@@ -65,8 +20,13 @@ def update_text(n_clicks_list, data):
     Output('usedWordleCount', 'children'),
     Output('usedWordleList','children'),
     Output('my_words','data'),
-    Output('my_letters','data', allow_duplicate=True),    
+    Output('my_letters','data', allow_duplicate=True),  
+    Output("enter_flag", "data", allow_duplicate=True),    
+    Output("backspace_flag", "data", allow_duplicate=True),   
+    Output("new_letter_flag", "data", allow_duplicate=True),          
+    Output("completed_word_index", "data", allow_duplicate=True),          
     Input("url", "pathname"),
+    
     prevent_initial_call=False  # allow it to run on load
 )
 
@@ -106,173 +66,341 @@ def initialize_everything(url):
     print(f"took {time.time() - start_time} secs to initialize")
 
     my_letters = ''
+    enter_flag = backspace_flag = new_letter_flag = 0
+    completed_word_index = -1
 
-    return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, usedList, unusedListRaw, my_letters
+    return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, \
+        usedList, unusedListRaw, my_letters, enter_flag, backspace_flag, new_letter_flag, completed_word_index
+
+
+# wrapper to handle/catch keypresses from the physical keyboard - letters and backspace only
+@app.callback(
+    Output("my_letters", "data", allow_duplicate=True),
+    Output("enter_flag", "data", allow_duplicate=True),    
+    Output("backspace_flag", "data", allow_duplicate=True),   
+    Output("new_letter_flag", "data", allow_duplicate=True),              
+    Input("key-listener", "n_keydowns"),
+    Input("key-listener", "keydown"),
+    State("my_letters", "data"),    
+)
+def on_physical_keypress(n, key, data):
+
+    enter_flag = no_update
+    backspace_flag = no_update
+    new_letter_flag = no_update
+
+    keypressed = key['key']
+
+    print(f"Key #{n}: {keypressed}, stored strokes = {data}")
+
+    if len(keypressed) == 1 and keypressed.isalpha():
+        data = str(data) + str(keypressed.upper())
+        new_letter_flag = 1
+    elif keypressed == 'Backspace':
+        if len(data) > 0:
+            backspace_flag = 1
+    elif keypressed == 'Enter':
+        print("Enter was pressed on physical keyboard")
+        enter_flag = 1
+    
+    return data, enter_flag, backspace_flag, new_letter_flag
+
+# handle input from the virtual on-screen keyboard - letters and backspace only
+@app.callback(
+    Output("my_letters", "data", allow_duplicate=True),
+    Output("enter_flag", "data", allow_duplicate=True),    
+    Output("backspace_flag", "data", allow_duplicate=True),   
+    Output("new_letter_flag", "data", allow_duplicate=True),        
+    Input({"type": "key-btn", "index": ALL}, "n_clicks"),
+    State("my_letters", "data"),
+    prevent_initial_call=True
+)
+def on_onscreen_keypress(n_clicks_list, data):
+
+    enter_flag = no_update
+    backspace_flag = no_update
+    new_letter_flag = no_update
+
+    ctx = callback_context
+    if not ctx.triggered:
+        return data, enter_flag
+
+    key_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    key_name = eval(key_id)["index"]
+
+    if key_name == "Backspace":
+        backspace_flag = 1
+    elif key_name == "Enter":
+        print("Enter was clicked on on-screen keyboard")
+        enter_flag = 1
+    else:
+        data = data + key_name
+        new_letter_flag = 1
+
+    return data, enter_flag, backspace_flag, new_letter_flag
+
+@app.callback(
+
+    Output({'type': 'wordle_letter', 'index': ALL}, 'children', allow_duplicate=True),  
+    #Output({'type': 'wordle_letter', 'index': ALL}, 'style', allow_duplicate=True),     
+    Output("new_letter_flag", "data", allow_duplicate=True),     
+    Output("my_letters", "data", allow_duplicate=True),
+    Input("new_letter_flag", "data"),   
+    State("my_letters", "data"),    
+    State({'type': 'wordle_letter', 'index': ALL}, 'id'),
+    State("completed_word_index", "data"),    
+    prevent_initial_call=True  # allow it to run on load
+
+)
+def pressed_letter(new_letter_flag, my_letters, ids, completed_word_index):
+
+    print("pressed_letter callback was triggered - checking new_letter_flag")
+
+    # nothing to update on first load
+    #all_styles =  [no_update] * len(ids)
+    all_children =  [no_update] * len(ids)    
+
+    if (new_letter_flag != 1):
+        print("new_letter_flag was found to be <> 1, so doing nothing")        
+        new_letter_flag = 0
+        return all_children, new_letter_flag, my_letters
+
+    print("new_letter_flag was found to be 1, so do something then clear the flag")
+    new_letter_flag = 0
+
+    new_letter = my_letters[-1:]
+    print(new_letter)
+
+    print(f'the len of my_letters = {len(my_letters)}')
+
+    current_row = (len(my_letters)-1) // 5 # the current row
+    current_row_position = (len(my_letters)-1) % 5 # position in row
+    target_id = f'{current_row}_{current_row_position}'
+    print(target_id)
+
+    if completed_word_index + 1 != current_row: # attempting to go past current word's end
+        new_letter_flag = 0
+        print(f"can't go past there! my_letters={my_letters}")
+        my_letters = my_letters[:((completed_word_index+1)*5)+5] # truncate letters to what is allowed
+        print(f"fixed that! my_letters={my_letters}")        
+        return all_children, new_letter_flag, my_letters
+
+    # find the position whose id['index'] == target and set its style
+    for pos, id_dict in enumerate(ids):
+        #print(f"{pos} -- {id_dict}")
+        if id_dict.get('index') == target_id:
+            # all_styles[pos] = {
+            #     'backgroundColor': 'yellow',
+            #     'border': '2px solid #000',
+            # }
+            all_children[pos] = new_letter
+
+            break
+
+    return all_children, new_letter_flag, my_letters
+
+@app.callback(
+
+    Output({'type': 'wordle_letter', 'index': ALL}, 'children', allow_duplicate=True),  
+    #Output({'type': 'wordle_letter', 'index': ALL}, 'style',allow_duplicate=True),  
+    Output("backspace_flag", "data", allow_duplicate=True),  
+    Output("my_letters", "data", allow_duplicate=True),
+
+    Input("backspace_flag", "data"),   
+    State("my_letters", "data"),  
+    State({'type': 'wordle_letter', 'index': ALL}, 'id'),
+    State("completed_word_index", "data"),     
+
+    prevent_initial_call=True  # allow it to run on load
+
+)
+def pressed_backspace(backspace_flag, my_letters, ids, completed_word_index):
+
+    print("pressed_backspace callback was triggered - checking backspace_flag")
+    all_children =  [no_update] * len(ids)   
+
+    if (backspace_flag != 1):
+        print("Backspace flag was found to be <> 1, so doing nothing")        
+        backspace_flag = 0
+        return all_children, backspace_flag, my_letters
+
+    print("Enter flag was found to be 1, so do something then clear the flag")
+    backspace_flag = 0
+
+    print(f'the len of my_letters = {len(my_letters)}')
+
+    current_row = (len(my_letters)-1) // 5 # the current row
+    current_row_position = (len(my_letters)-1) % 5 # position in row
+    target_id = f'{current_row}_{current_row_position}'
+
+    if current_row_position >= 0: # there's letter(s) in this row, so delete one letter
+        my_letters = my_letters[:-1]
+        print(f"After backspace, my_letters={my_letters}")        
+
+    print(f'removing from {target_id}')
+
+    # find the position whose id['index'] == target and set its style
+    for pos, id_dict in enumerate(ids):
+        #print(f"{pos} -- {id_dict}")
+        if id_dict.get('index') == target_id:
+            # all_styles[pos] = {
+            #     'backgroundColor': 'yellow',
+            #     'border': '2px solid #000',
+            # }
+            all_children[pos] = None
+
+            break
+
+    return all_children, backspace_flag, my_letters
 
 #process what happens when people click enter on each completed word
 
 #(id={"type" : "wordle_letter_div", "index" : f'{row}_{col}'}
 
-# @app.callback(
-#     # Output({'type': 'wordle_letter', 'index': ALL}, 'disabled',allow_duplicate=True),  
-#     # Output({'type': 'wordle_letter', 'index': ALL}, 'style',allow_duplicate=True),  
-#     Output('my_words', 'data',allow_duplicate=True),   
-#     Output('remainingWordsListScored', 'children',allow_duplicate=True),
-#     Output('headerWordcount','children',allow_duplicate=True),
+@app.callback(
+
+    Output({'type': 'wordle_letter', 'index': ALL}, 'style',allow_duplicate=True),  
+    Output('my_words', 'data', allow_duplicate=True),   
+    Output("enter_flag", "data", allow_duplicate=True),     
+    Output('remainingWordsListScored', 'children',allow_duplicate=True),
+    Output('headerWordcount','children',allow_duplicate=True),   
+    Output('suggestBest', 'children', allow_duplicate=True),
+    Output('suggestWorst', 'children', allow_duplicate=True),
+    Output('chart_distro', 'figure', allow_duplicate=True),
+    Output('chart_histro', 'figure', allow_duplicate=True),
+    Output("completed_word_index", "data"),        
+    Input("enter_flag", "data"),   
+    State("my_letters", "data"),    
+    State('my_words', 'data'),     
+    State({'type': 'wordle_letter', 'index': ALL}, 'style'),
+    State("completed_word_index", "data"),     
+
+    prevent_initial_call=True  # allow it to run on load
+
+)
+def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_index):
+
+    print("pressed_enter callback was triggered - checking enter_flag")
+    all_style =  [no_update] * len(ids)   
+
+    if (enter_flag != 1):
+        print("Enter flag was found to be <> 1, so doing nothing")        
+        enter_flag = 0
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update
+
+    print("Enter flag was found to be 1, so do something then clear the flag")
+    enter_flag = 0
+
+    if (len(my_letters) == 0) or (len(my_letters) % 5 != 0): # check if a word is actually fully entered
+        print("Incomplete/no word found, so doing nothing")
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update 
+
+#     last_full_word_index = int((len(my_letters) / 5)-1)
+
+    completed_word_index += 1 # finished a word
+    last_guess_word = my_letters[-5:]
+
+    print(last_guess_word)
+
+#     # style all rows that filled or empty; also style the current word cells with different color
+
+    last_guess_colors = []
+    #style_list = []
+
+    # iterate thru the blocks and set the style as appropriate
+    # for pos, id_dict in enumerate(ids):
+    #     print(f"{pos} -- {id_dict}")
+        # if id_dict.get('index') == target_id:
+        #     # all_styles[pos] = {
+        #     #     'backgroundColor': 'yellow',
+        #     #     'border': '2px solid #000',
+        #     # }
+        #     all_children[pos] = None
+
+        #     break
+
+    # print(f'completed word index: {completed_word_index}')
+
+    # all_style = []
+
+        #junk
+
+    # get current row colors
+    for c in range(5):
+        last_guess_colors.append(ids[(completed_word_index*5)+c]) 
+
+
+    # highlight the next row to guess
+    all_style = []
+    for r in range(6):
+        for c in range(5):
+            if r == completed_word_index+1:
+                all_style.append({'backgroundColor': '#555'})    
+            else: 
+                all_style.append(no_update)
+        
     
-#     Output('suggestBest', 'children', allow_duplicate=True),
-#     Output('suggestWorst', 'children', allow_duplicate=True),
-#     Output('chart_distro', 'figure', allow_duplicate=True),
-#     Output('chart_histro', 'figure', allow_duplicate=True),
-
-#     Input("key-listener", "keydown"),
-
-#     #Input({'type': 'wordle_letter', 'index': ALL}, 'n_submit'),  
-#     State({'type': 'wordle_letter', 'index': ALL}, 'value'),
-#     State({'type': 'wordle_letter', 'index': ALL}, 'style'),
-#     State('my_words', 'data'),
-#     prevent_initial_call=True  # allow it to run on load
-
-# )
-# def read_all_fields(key, value, style, unusedListRaw):
-
-#     keypressed = key['key']
-#     if keypressed != 'Enter':
-#         return [no_update] * len(value), [no_update] * len(value), no_update, no_update, no_update, no_update, no_update, no_update, no_update
-
-#     print("Enter key pressed")
-
-#     print(value)
-#     print(style)
-
-#     print(f'\n unused list raw len: {len(unusedListRaw)}')
-
-#     last_full_word_index = -1
-
-#     # first identify if words have been completed
-
-#     counter = 0
-#     for x in value[0:30]:
-#         if (len(x) == 1) & (x.isalpha()):
-#             counter += 1 
-
-#     print(f"found {counter} letters")
-#     if counter % 5 > 0: # partial words, return immediately without doing anything
-#         print("partial word, not continuing!")
-#         return [no_update] * len(value), [no_update] * len(value), no_update, no_update, no_update, no_update, no_update, no_update, no_update
-
-
-#     if all((len(x) == 1) & (x.isalpha()) for x in value[0:5]):
-#         last_full_word_index = 0
-    
-#     if all((len(x) == 1) & (x.isalpha()) for x in value[5:10]):
-#         last_full_word_index = 1
-    
-#     if all((len(x) == 1) & (x.isalpha()) for x in value[10:15]):
-#         last_full_word_index = 2
-    
-#     if all((len(x) == 1) & (x.isalpha()) for x in value[15:20]):
-#         last_full_word_index = 3
-    
-#     if all((len(x) == 1) & (x.isalpha()) for x in value[20:25]):
-#         last_full_word_index = 4
-    
-#     if all((len(x) == 1) & (x.isalpha()) for x in value[25:30]):
-#         last_full_word_index = 5
-    
-#     print(last_full_word_index)
-
-#     print(f'\n{str(last_full_word_index)}')
-
-
-#     # disable all rows that filled or empty; enable the current word cells
-
-#     last_guess_word = []
-#     last_guess_colors = []
-
-#     disabled_list = []
-#     style_list = []
-#     for r in range(6):
-#         for c in range(5):
-
-#             if r == last_full_word_index+1: #activating the new row
-#                 disabled_list.append(False) 
-#                 style_list.append({'backgroundColor': '#555'})
-
-#             else:
-#                 disabled_list.append(True)
-
-#                 if style[(r*5)+c]['backgroundColor'] == '#555': 
-#                     style_list.append({'backgroundColor': '#333'})
-#                 else:
-#                     style_list.append({'backgroundColor': style[(r*5)+c]['backgroundColor']})
-
-#                 # collect the values and colors of the guess
-#                 if r == last_full_word_index:
-#                     last_guess_word.append(value[(r*5)+c])
-#                     last_guess_colors.append(style[(r*5)+c])                    
-                
+    print(all_style)
+    print(last_guess_colors)
+    print(f'\n{last_guess_word}')
+              
 #     # next we update the list of remaining words, based on the previous word input (letters and colors)
 
-#     print(f'\n{last_guess_word}, {last_guess_colors}')
+    for letter_location in range(5):
 
-#     for letter_location in range(5):
+        if last_guess_colors[letter_location]['backgroundColor'] == GREEN: # got a hit
+            print(f'\n green')
+            unusedListRaw = known_letter_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
+            print(f'\n new len is {len(unusedListRaw)}')
+        elif last_guess_colors[letter_location]['backgroundColor'] == YELLOW: # partial hit
+            print(f'\n yellow')
+            unusedListRaw = known_letter_unknown_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
+            print(f'\n new len is {len(unusedListRaw)}')
+        else: # remove letter
+            print(f'\n gray')
+            unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location].lower())  
+            print(f'\n new len is {len(unusedListRaw)}')
 
-#         if last_guess_colors[letter_location]['backgroundColor'] == GREEN: # got a hit
-#             print(f'\n green')
-#             unusedListRaw = known_letter_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
-#             print(f'\n new len is {len(unusedListRaw)}')
-#         elif last_guess_colors[letter_location]['backgroundColor'] == YELLOW: # partial hit
-#             print(f'\n yellow')
-#             unusedListRaw = known_letter_unknown_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
-#             print(f'\n new len is {len(unusedListRaw)}')
-#         else: # remove letter
-#             print(f'\n gray')
-#             unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location].lower())  
-#             print(f'\n new len is {len(unusedListRaw)}')
+        print(f'unused list is now {len(unusedListRaw)} words left...')
 
-#         print(f'unused list is now {len(unusedListRaw)} words left...')
+    print(f'unused list is now {len(unusedListRaw)} words left...')       
 
-#     print(f'unused list is now {len(unusedListRaw)} words left...')       
+    best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
+    myList, best_three, worst_three = format_list_of_words_scored(myListDict)
 
-#     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
-#     myList, best_three, worst_three = format_list_of_words_scored(myListDict)
+    suggestBest = f"Best three guess words: {', '.join(best_three)}"
+    suggestWorst = f"Bravest three words: {', '.join(worst_three)}"    
 
-#     suggestBest = f"Best three guess words: {', '.join(best_three)}"
-#     suggestWorst = f"Bravest three words: {', '.join(worst_three)}"    
+    chart_distro = distro_builder(occurrances)
+    chart_histro = histo_builder(weights)
 
-#     chart_distro = distro_builder(occurrances)
-#     chart_histro = histo_builder(weights)
+    # suggestBest = f"Suggested word: {best_word}, score of {best_score}"
+    # suggestWorst = f"Bravest word: {worst_word}, score of {worst_score}"
 
-#     # suggestBest = f"Suggested word: {best_word}, score of {best_score}"
-#     # suggestWorst = f"Bravest word: {worst_word}, score of {worst_score}"
+    print(len(unusedListRaw))
 
-#     print(last_guess_word)
-#     print(last_guess_colors)
-#     print(len(unusedListRaw))
+    headerWordCount = f"Word Count: {len(unusedListRaw)}"
 
-#     headerWordCount = f"Word Count: {len(unusedListRaw)}"
-
-#     return disabled_list, style_list, unusedListRaw, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro
+    return all_style, unusedListRaw, enter_flag, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro, completed_word_index
 
 # change/toggle the color of the grid on click
 
 @app.callback(
     Output({'type': 'wordle_letter', 'index': MATCH}, 'style',allow_duplicate=True),  
-    Input({'type': 'wordle_letter_div', 'index': MATCH}, 'n_clicks'),  
+    Input({'type': 'wordle_letter', 'index': MATCH}, 'n_clicks'),  
     State({'type': 'wordle_letter', 'index': MATCH}, 'style'),  
 
 )
 def change_color(n_clicks, style):
 
     if style is None or style['backgroundColor'] == '#555':
-        return {'backgroundColor' : '#E0E06C'}
-    
+        return {'backgroundColor' : '#E0E06C'}    
     elif style['backgroundColor'] == "#E0E06C":
-
         return {'backgroundColor' : '#00AF82'}
     elif style['backgroundColor'] == '#00AF82':
         return {'backgroundColor' : '#555'}
+    else:
+        return {'backgroundColor' : '#333'}
 
 
 # # This JS will capture keydown events on the page and write them to a store
