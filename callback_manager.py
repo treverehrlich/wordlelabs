@@ -25,6 +25,7 @@ def get_main_layout():
     Output("backspace_flag", "data", allow_duplicate=True),   
     Output("new_letter_flag", "data", allow_duplicate=True),          
     Output("completed_word_index", "data", allow_duplicate=True),          
+    Output("all_words", "data", allow_duplicate=True),      
     Input("url", "pathname"),
     
     prevent_initial_call=False  # allow it to run on load
@@ -70,7 +71,7 @@ def initialize_everything(url):
     completed_word_index = -1
 
     return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, \
-        usedList, unusedListRaw, my_letters, enter_flag, backspace_flag, new_letter_flag, completed_word_index
+        usedList, unusedListRaw, my_letters, enter_flag, backspace_flag, new_letter_flag, completed_word_index, allListRaw
 
 
 # wrapper to handle/catch keypresses from the physical keyboard - letters and backspace only
@@ -268,17 +269,19 @@ def pressed_backspace(backspace_flag, my_letters, ids, completed_word_index):
     Output('suggestWorst', 'children', allow_duplicate=True),
     Output('chart_distro', 'figure', allow_duplicate=True),
     Output('chart_histro', 'figure', allow_duplicate=True),
-    Output("completed_word_index", "data"),        
+    Output("completed_word_index", "data"),   
+    Output("status_output", "children", allow_duplicate=True),   
     Input("enter_flag", "data"),   
     State("my_letters", "data"),    
     State('my_words', 'data'),     
     State({'type': 'wordle_letter', 'index': ALL}, 'style'),
-    State("completed_word_index", "data"),     
+    State("completed_word_index", "data"),  
+    State("all_words", "data"),        
 
     prevent_initial_call=True  # allow it to run on load
 
 )
-def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_index):
+def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_index, all_words):
 
     print("pressed_enter callback was triggered - checking enter_flag")
     all_style =  [no_update] * len(ids)   
@@ -286,44 +289,32 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
     if (enter_flag != 1):
         print("Enter flag was found to be <> 1, so doing nothing")        
         enter_flag = 0
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, ""
 
-    print("Enter flag was found to be 1, so do something then clear the flag")
     enter_flag = 0
 
     if (len(my_letters) == 0) or (len(my_letters) % 5 != 0): # check if a word is actually fully entered
         print("Incomplete/no word found, so doing nothing")
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update 
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, ""
 
-#     last_full_word_index = int((len(my_letters) / 5)-1)
+    # check if this completed word is a new completed word, or is still last word completed word
+    new_full_word_index = int((len(my_letters) // 5)-1)
+    print(new_full_word_index)
+    print(completed_word_index)
+    if new_full_word_index <= completed_word_index:
+        print("Enter was pressed, but there's no new word")
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, ""        
 
-    completed_word_index += 1 # finished a word
+
     last_guess_word = my_letters[-5:]
-
     print(last_guess_word)
 
-#     # style all rows that filled or empty; also style the current word cells with different color
+    if last_guess_word.lower() not in all_words:
+        print(f"{last_guess_word} is not a word!")
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "That is not a valid word!"         
 
+    completed_word_index += 1 # finished a word
     last_guess_colors = []
-    #style_list = []
-
-    # iterate thru the blocks and set the style as appropriate
-    # for pos, id_dict in enumerate(ids):
-    #     print(f"{pos} -- {id_dict}")
-        # if id_dict.get('index') == target_id:
-        #     # all_styles[pos] = {
-        #     #     'backgroundColor': 'yellow',
-        #     #     'border': '2px solid #000',
-        #     # }
-        #     all_children[pos] = None
-
-        #     break
-
-    # print(f'completed word index: {completed_word_index}')
-
-    # all_style = []
-
-        #junk
 
     # get current row colors
     for c in range(5):
@@ -381,7 +372,7 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
 
     headerWordCount = f"Word Count: {len(unusedListRaw)}"
 
-    return all_style, unusedListRaw, enter_flag, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro, completed_word_index
+    return all_style, unusedListRaw, enter_flag, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro, completed_word_index, ""
 
 # change/toggle the color of the grid on click
 

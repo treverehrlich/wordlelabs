@@ -19,6 +19,7 @@ def render_main_layout():
         Keyboard(id="key-listener"),
         dcc.Location(id="url"),  # triggers callback on load
         dcc.Store(id="my_words", storage_type="session"),
+        dcc.Store(id="all_words", storage_type="session"),        
         dcc.Store(id="my_letters", storage_type="session"),        
         dcc.Store(id="enter_flag", storage_type="session"),                
         dcc.Store(id="backspace_flag", storage_type="session"),           
@@ -52,11 +53,12 @@ def render_main_layout():
 
 
                 html.Div(children=grid_builder(), className='gridAreaContainer'),
-
+                html.Div(children="", id="status_output"),
+                
                 keyboard_builder(),
 
                 #dcc.Input(id='dummy_input', value='', autoFocus=True, style={'opacity': 50, 'position': 'absolute'}),
-                #html.Div(children="test", id="output"),
+
 
 
             ],
