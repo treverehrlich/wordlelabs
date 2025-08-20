@@ -114,7 +114,8 @@ def render_main_layout():
                                 },                                 
                             },
                           
-                            config={'responsive': True})
+                            config={"responsive": True, "staticPlot": True, "displaylogo": False}                            
+                    )
                 ], id='chart_distro_div'),
 
                 html.Div(children="Letter Positions",className='colHeaderText'),
@@ -131,7 +132,8 @@ def render_main_layout():
                                     "plot_bgcolor": "rgba(0,0,0,0)",
                                 },                                  
                             },
-                        config={'responsive': True})
+                            config={"responsive": True, "staticPlot": True, "displaylogo": False}
+                        )
                 ], id='chart_histro_div'),
 
             ],
@@ -177,7 +179,7 @@ def make_row(keys):
     return html.Div(
         [
             html.Button(
-                "Bksp" if key == "Backspace" else ("Enter" if key == "Enter" else key),
+                "⌫" if key == "Backspace" else ("Enter" if key == "Enter" else key),
                 id={"type": "key-btn", "index": key},
                 n_clicks=0,
                 className="keyboard-key special-key" if key in ["Backspace", "Enter"] else "keyboard-key"

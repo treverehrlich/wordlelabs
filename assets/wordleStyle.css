@@ -192,7 +192,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    font-size: clamp(2rem, 2vw, 2rem);
+    font-weight: bold;
     cursor: pointer;
     user-select: none;
     transition: background-color 0.15s ease, transform 0.05s ease;
@@ -242,14 +243,8 @@ body {
 
 #chart_distro {
     width: 100%;
-    height: 40vh;
+    height: 30vh;
 }
-
-#chart_histro {
-    width: 100%;
-    height: 40vh;
-}
-
 
 #chart_distro_div {
     clear: both;
@@ -257,8 +252,13 @@ body {
     width: 100%;
     margin: 0vh 0vw 1vh 0vw;
     padding: 0vh;
+    height: 30vh;
 }
 
+#chart_histro {
+    width: 100%;
+    height: 40vh;
+}
 
 #chart_histro_div {
     clear: both;
@@ -266,6 +266,7 @@ body {
     width: 100%;
     margin: 1vh 0;
     padding: 0vh;
+    height: 40vh;
 
 }
 

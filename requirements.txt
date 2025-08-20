@@ -2,7 +2,7 @@ dash-bootstrap-components
 dash-bootstrap-templates
 dash-core-components
 dash-cytoscape
-dash-extensions
+dash-extensions==2.0.1
 dash-holoniq-apexcharts
 dash-html-components
 dash-iconify
