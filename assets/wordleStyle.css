@@ -156,7 +156,7 @@ body {
     gap: 0.25em;
     width: 90%;
     height: 100%;
-    margin: auto;
+    margin: 0 auto 1vh auto;
 
 
 }
@@ -166,7 +166,7 @@ body {
 .wordleGridClassDiv {    
     clear: both;
     margin: 2vh 0 0 0;
-    width: 65%;
+    width: 55%;
 
 }
 
