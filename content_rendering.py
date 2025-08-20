@@ -246,10 +246,10 @@ def format_list_of_words_scored(thisListDict):
         #format_row.append(html.Div(f'{key} ({value['score']})',className="wordDivsInList"))
 
     # First 3 values
-    first_three = list(thisListDict.keys())[:3]
+    first_three = list(thisListDict.keys())[:5]
 
     # Last 3 values
-    last_three = list(thisListDict.keys())[-3:]
+    last_three = list(thisListDict.keys())[-5:]
 
     return format_row, first_three, last_three
 

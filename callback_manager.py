@@ -54,8 +54,8 @@ def initialize_everything(url):
     # jsonForSession = json.dumps(myListRaw)
     # print(jsonForSession)
 
-    suggestBest = f"Best three guess words: {', '.join(best_three)}"
-    suggestWorst = f"Bravest three words: {', '.join(worst_three)}"
+    suggestBest = f"Best words: {', '.join(best_three)}"
+    suggestWorst = f"Bravest words: {', '.join(worst_three)}"
 
     headerWordCount = f"Word Count: {len(unusedListRaw)}"
 

@@ -61,7 +61,7 @@ body {
 
 
 .colHeader {
-    height: 20vh;
+
     background-color: black;
     padding: 0px;
 }
@@ -134,7 +134,8 @@ body {
 .genericWordList {
     color: #aaa;
     overflow-y: auto;
-    height: 75vh;    
+    max-height: 75vh;   /* can grow up to 75% of viewport height */
+    height: auto;       /* shrink/grow based on content */
 
 }
 
