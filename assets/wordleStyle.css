@@ -10,7 +10,7 @@ body {
 
 /* Common styles (optional) */
 .col {
-    padding: 1vw 0;
+    padding: 1vw 1vw;
     text-align: center;
     height: 100vh;  
 }
