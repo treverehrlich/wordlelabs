@@ -301,8 +301,8 @@ body {
     clear: both;
     margin: 1vh 3vw;
     padding: 1vh;
-    height: 5vh;
-    width: 80%;
+    height: 8vh;
+    width: 90%;
     background-color: lightgray;
     border: none; /* Remove any border */
     border-radius: 0; /* Remove rounded corners for a truly flat look */
