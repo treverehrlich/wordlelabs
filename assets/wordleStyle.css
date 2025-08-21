@@ -14,7 +14,7 @@ body {
     text-align: center;
     height: 100vh;  
 }
-
+ 
 /* Set specific widths — adjust as needed */
 .col1 { 
     flex: 0 0 35%;
