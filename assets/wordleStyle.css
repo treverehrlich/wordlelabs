@@ -287,6 +287,40 @@ body {
     color: red;
 }
 
+#feedback_container {
+
+    justify-content: center;
+    float: left;
+    clear: both;
+    width: 100%;
+    text-align: center;
+}
+
+#feedback {
+    float: left;
+    clear: both;
+    margin: 1vh 3vw;
+    padding: 1vh;
+    height: 5vh;
+    width: 80%;
+    background-color: lightgray;
+    border: none; /* Remove any border */
+    border-radius: 0; /* Remove rounded corners for a truly flat look */
+    box-shadow: none; /* Remove any box shadow */    
+}
+
+#submit_btn {
+    float: left;
+    clear: both;
+    margin: 1vh 3vw;
+    color: white;
+    background-color: #00AF82;
+    border: none; /* Remove any border */
+    border-radius: 0; /* Remove rounded corners for a truly flat look */
+    box-shadow: none; /* Remove any box shadow */
+
+}
+
 
 
 /* SCROLLBAR STYLE */

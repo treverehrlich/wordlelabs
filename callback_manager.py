@@ -6,6 +6,8 @@ from constants import *
 import csv
 import uuid
 import time
+from datetime import datetime
+from flask import request
 
 def get_main_layout():
     return render_main_layout()
@@ -359,8 +361,8 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
     best_word, best_score, worst_word, worst_score, myListDict, occurrances, weights = get_next_best_word(unusedListRaw)
     myList, best_three, worst_three = format_list_of_words_scored(myListDict)
 
-    suggestBest = f"Best three guess words: {', '.join(best_three)}"
-    suggestWorst = f"Bravest three words: {', '.join(worst_three)}"    
+    suggestBest = f"Best words: {', '.join(best_three)}"
+    suggestWorst = f"Bravest words: {', '.join(worst_three)}"    
 
     chart_distro = distro_builder(occurrances)
     chart_histro = histo_builder(weights)
@@ -392,6 +394,28 @@ def change_color(n_clicks, style):
         return {'backgroundColor' : '#555'}
     else:
         return {'backgroundColor' : '#333'}
+
+
+@app.callback (
+    Output("feedback", "value", allow_duplicate=True),            
+    Output("feedback", "placeholder", allow_duplicate=True),            
+    Input("submit_btn", 'n_clicks'),  
+    State("feedback", "value"),            
+)
+def send_feedback(click, feedback):
+
+    print("got feedback")
+
+    now = datetime.now()
+    dt_string = now.strftime("%Y-%m-%d %H:%M:%S")    
+
+    # Append text to a file
+    with open("feedback.txt", "a") as f:
+        f.write(f"visit datetime: {dt_string}:\n")
+        f.write(f"ip address: {request.remote_addr}\n")
+        f.write(f"{feedback}\n\n")
+
+    return "", "Thanks!"
 
 
 # # This JS will capture keydown events on the page and write them to a store

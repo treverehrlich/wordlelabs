@@ -136,6 +136,20 @@ def render_main_layout():
                         )
                 ], id='chart_histro_div'),
 
+                html.Div([
+
+                    dcc.Textarea(
+                        id="feedback",
+                        value="",
+                        placeholder="We'd love to hear from you - send some feedback!"
+                    ),
+
+                    html.Button("Send Note", id="submit_btn", n_clicks=0),                    
+                    
+                ], id="feedback_container"),
+
+
+
             ],
             className="col col3"
 
