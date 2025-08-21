@@ -193,7 +193,7 @@ def make_row(keys):
     return html.Div(
         [
             html.Button(
-                "⌫" if key == "Backspace" else ("Enter" if key == "Enter" else key),
+                "⌫" if key == "Backspace" else ("GO" if key == "Enter" else key),
                 id={"type": "key-btn", "index": key},
                 n_clicks=0,
                 className="keyboard-key special-key" if key in ["Backspace", "Enter"] else "keyboard-key"
