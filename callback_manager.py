@@ -339,22 +339,54 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
               
 #     # next we update the list of remaining words, based on the previous word input (letters and colors)
 
+    # use a dict to keep track of number of occurrances of a letter in the word
+    alphabet_dict = {} #{chr(c): 0 for c in range(ord('a'), ord('z') + 1)}
+    print(alphabet_dict)
+
     for letter_location in range(5):
 
         if last_guess_colors[letter_location]['backgroundColor'] == GREEN: # got a hit
-            print(f'\n green')
+            print(f'\n green')           
             unusedListRaw = known_letter_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
             print(f'\n new len is {len(unusedListRaw)}')
         elif last_guess_colors[letter_location]['backgroundColor'] == YELLOW: # partial hit
             print(f'\n yellow')
             unusedListRaw = known_letter_unknown_location(unusedListRaw, last_guess_word[letter_location].lower(), letter_location)
             print(f'\n new len is {len(unusedListRaw)}')
-        else: # remove letter
-            print(f'\n gray')
-            unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location].lower())  
-            print(f'\n new len is {len(unusedListRaw)}')
+        else:
+            pass
 
-        print(f'unused list is now {len(unusedListRaw)} words left...')
+
+    # now, build a dict that keeps track of how many times each guess letter appears, based on the coloring
+    # this way we can properly filter for multiple letter occurrances
+    for letter_location in range(5):
+
+        if last_guess_colors[letter_location]['backgroundColor'] in [GREEN,YELLOW]:   
+
+            if last_guess_word[letter_location].lower() in alphabet_dict:
+                alphabet_dict[last_guess_word[letter_location].lower()] += 1
+            else:
+                alphabet_dict[last_guess_word[letter_location].lower()] = 1
+
+        else:
+
+            if last_guess_word[letter_location].lower() in alphabet_dict:
+                pass # do nothing, since we might already be incrementing that
+            else:
+                alphabet_dict[last_guess_word[letter_location].lower()] = 0            
+
+
+    print(alphabet_dict)
+    unusedListRaw = letter_occurrances(unusedListRaw,alphabet_dict)
+
+    # print(char_counts)
+
+
+
+        # else: # remove letter
+        #     print(f'\n gray')
+        #     unusedListRaw = remove_letter(unusedListRaw, last_guess_word[letter_location].lower())  
+        #     print(f'\n new len is {len(unusedListRaw)}')
 
     print(f'unused list is now {len(unusedListRaw)} words left...')       
 

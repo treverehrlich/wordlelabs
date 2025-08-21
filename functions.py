@@ -230,3 +230,18 @@ def find_unused_words(all,used):
     print(f"found {len(unique_words)} unused words")
 
     return unique_words
+
+
+# remove words without the proper number of letters
+def letter_occurrances(unusedListRaw,alphabet_dict):
+
+    valid_words = unusedListRaw[:]  # start with all words
+
+    for letter, count in alphabet_dict.items():
+
+        if count > 0: # if a letter occurred at least once, keep all words that have that letter at least the observed number of times
+            valid_words = [w for w in valid_words if w.count(letter) >= count]
+        else: # if we had a letter with zero occurrances, remove all words with that letter
+            valid_words = [w for w in valid_words if w.count(letter) == count]             
+
+    return valid_words
