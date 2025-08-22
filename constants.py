@@ -1,2 +1,2 @@
-YELLOW = '#E0E06C'
+YELLOW = "#b59f3b"
 GREEN = '#00AF82'

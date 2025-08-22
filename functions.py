@@ -10,8 +10,8 @@ def get_next_best_word(unused_list):
     letter_occurrences_dict = letter_count(unused_list)
     letter_position_weights = letter_position_counts(unused_list)
 
-    print(letter_occurrences_dict)
-    print(letter_position_weights)
+    # print(letter_occurrences_dict)
+    # print(letter_position_weights)
 
     myListDict = {}
 

@@ -24,7 +24,9 @@ def render_main_layout():
         dcc.Store(id="enter_flag", storage_type="session"),                
         dcc.Store(id="backspace_flag", storage_type="session"),           
         dcc.Store(id="new_letter_flag", storage_type="session"),           
-        dcc.Store(id="completed_word_index", storage_type="session"),           
+        dcc.Store(id="completed_word_index", storage_type="session"), 
+        dcc.Store(id="completed", storage_type="session"), 
+          
 
 
         html.Div(
@@ -164,6 +166,7 @@ def render_main_layout():
                 ],   
                 className='colHeader'),
                 html.Div(children=[],id='usedWordleList',className='genericWordList'),
+                html.Div(children="0",id='visit_counter'),
 
             ],
             className="col col4"

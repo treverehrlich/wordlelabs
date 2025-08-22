@@ -198,6 +198,7 @@ body {
     cursor: pointer;
     user-select: none;
     transition: background-color 0.15s ease, transform 0.05s ease;
+    color: white;
 
 /*    float: left;
     padding: 0;
@@ -321,6 +322,14 @@ body {
 
 }
 
+#visit_counter {
+
+    margin: 2vh 0;
+    float: right;
+    clear: both;
+    color: #111;
+    font-size: 70%;
+}
 
 
 /* SCROLLBAR STYLE */
