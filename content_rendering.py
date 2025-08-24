@@ -18,8 +18,7 @@ def render_main_layout():
 
         Keyboard(id="key-listener"),
         dcc.Location(id="url"),  # triggers callback on load
-        dcc.Store(id="my_words", storage_type="session"),
-        dcc.Store(id="all_words", storage_type="session"),        
+        dcc.Store(id="my_words", storage_type="session"),     
         dcc.Store(id="my_letters", storage_type="session"),        
         dcc.Store(id="enter_flag", storage_type="session"),                
         dcc.Store(id="backspace_flag", storage_type="session"),           

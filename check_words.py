@@ -1,12 +1,15 @@
 import enchant
 import csv
 
+
+
+
 # Initialize English dictionary
-d = enchant.Dict("en_US")
+d = enchant.Dict("en_NA")
 
 # Input/output file paths
-input_csv = "assets/all_wordle_words.csv"
-output_csv = "assets/valid_words.csv"
+input_csv = "assets/all_wordle_words_too_loose.csv"
+output_csv = "assets/valid_words_NA.csv"
 
 with open(input_csv, newline="", encoding="utf-8") as infile, \
      open(output_csv, "w", newline="", encoding="utf-8") as outfile:
@@ -27,3 +30,5 @@ with open(input_csv, newline="", encoding="utf-8") as infile, \
             print(f"rejected: {word}")
 
 print(f"Valid words written to {output_csv}")
+
+print(enchant.list_languages())

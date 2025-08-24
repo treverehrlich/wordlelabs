@@ -26,8 +26,7 @@ def get_main_layout():
     Output("enter_flag", "data", allow_duplicate=True),    
     Output("backspace_flag", "data", allow_duplicate=True),   
     Output("new_letter_flag", "data", allow_duplicate=True),          
-    Output("completed_word_index", "data", allow_duplicate=True),          
-    Output("all_words", "data", allow_duplicate=True),      
+    Output("completed_word_index", "data", allow_duplicate=True),            
     Output("completed", "data", allow_duplicate=True),    
     Output("visit_counter", "children", allow_duplicate=True),    
     Input("url", "pathname"),
@@ -91,7 +90,7 @@ def initialize_everything(url):
         f.write(f"visit datetime: {dt_string}, ip address: {request.remote_addr}\n")
 
     return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, \
-        usedList, unusedListRaw, my_letters, enter_flag, backspace_flag, new_letter_flag, completed_word_index, allListRaw,0, visit_counter
+        usedList, unusedListRaw, my_letters, enter_flag, backspace_flag, new_letter_flag, completed_word_index, 0, visit_counter
 
 
 # wrapper to handle/catch keypresses from the physical keyboard - letters and backspace only
@@ -307,13 +306,12 @@ def pressed_backspace(backspace_flag, my_letters, ids, completed_word_index):
     State("my_letters", "data"),    
     State('my_words', 'data'),     
     State({'type': 'wordle_letter', 'index': ALL}, 'style'),
-    State("completed_word_index", "data"),  
-    State("all_words", "data"),        
+    State("completed_word_index", "data"),    
 
     prevent_initial_call=True  # allow it to run on load
 
 )
-def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_index, all_words):
+def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_index):
 
     print("pressed_enter callback was triggered - checking enter_flag")
     all_style =  [no_update] * len(ids)   
@@ -338,11 +336,17 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
         return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update       
 
     last_guess_word = my_letters[-5:]
-    print(last_guess_word)
+    # print(last_guess_word)
 
-    if last_guess_word.lower() not in all_words:
-        print(f"{last_guess_word} is probably not a Wordle word!")
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "That is not a valid word!", no_update         
+    with open("assets/all_5_letter_words_loose.csv", newline="", encoding="utf-8") as csvfile:
+        all_words_loose = csvfile.read().splitlines()
+
+    # print(all_words_loose)
+    # print(last_guess_word.lower())
+
+    if last_guess_word.lower() not in all_words_loose:
+        print(f"{last_guess_word} is probably not even a word!")
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "That is not a word!", no_update         
 
     completed_word_index += 1 # finished a word
     last_guess_colors = []
