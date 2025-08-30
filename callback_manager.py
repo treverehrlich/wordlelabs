@@ -477,11 +477,28 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
 
         return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update, True, visits   
 
+    if last_guess_word.lower() == 'zgggg': #show guess words
 
+        FILE_PATH = pathlib.Path("guesses.txt").expanduser()
+
+        guesses = ''
+        try:
+            guesses = FILE_PATH.read_text(encoding="utf-8", errors="replace")
+        except Exception as e:
+            print(f"Error opening file: {e}")
+
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update, True, guesses   
 
     if last_guess_word.lower() not in all_words_loose:
         #print(f"{last_guess_word} is probably not even a word!")
         return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "That is not a word!", no_update, False, no_update         
+
+    ip_address = get_client_ip()
+    location_info = ip_location(ip_address)
+
+    # Append text to a file
+    with open("guesses.txt", "a") as f:
+        f.write(f"{last_guess_word} -- {location_info}\n")
 
     completed_word_index += 1 # finished a word
     last_guess_colors = []
