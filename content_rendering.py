@@ -4,6 +4,7 @@ from datetime import datetime
 from functions import *
 import json
 
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import string
@@ -26,7 +27,17 @@ def render_main_layout():
         dcc.Store(id="completed_word_index", storage_type="session"), 
         dcc.Store(id="completed", storage_type="session"), 
           
-
+        dbc.Modal(
+            [dbc.ModalBody("This is the content of the modal",id="modal_body"),],
+            id="modal",
+            is_open=False,  # Open the modal at opening the webpage.
+            size="lg",  # "sm", "lg", "xl" = small, large or extra large
+            backdrop=True,  # Modal to not be closed by clicking on backdrop
+            scrollable=True,  # Scrollable in case of large amount of text
+            centered=True,  # Vertically center modal
+            keyboard=True,  # Close modal when escape is pressed
+            fade=True,  # Let the modal fade instead of appear.
+        ), 
 
         html.Div(
             children=[

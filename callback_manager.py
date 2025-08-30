@@ -8,6 +8,7 @@ import uuid
 import time
 from datetime import datetime
 from flask import request
+import pathlib
 
 def get_main_layout():
     return render_main_layout()
@@ -85,13 +86,23 @@ def initialize_everything(url):
     feedback_estimate = int(feedback_lines/4)
     visit_counter = f'{visit_counter}:{feedback_estimate}'
 
+    ip_address = get_client_ip()
+    location_info = ip_location(ip_address)
+
     # Append text to a file
     with open("visits.txt", "a") as f:
-        f.write(f"visit datetime: {dt_string}, ip address: {request.remote_addr}\n")
+        f.write(f"visit datetime: {dt_string}, ip address: {get_client_ip()}\n")
+        f.write(f"{location_info}\n")
 
     return suggestBest, suggestWorst, headerWordCount, myList, chart_distro, chart_histro, usedWordleCount, \
         usedList, unusedListRaw, my_letters, enter_flag, backspace_flag, new_letter_flag, completed_word_index, 0, visit_counter
 
+
+def get_client_ip():
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    if ip:
+        ip = ip.split(",")[0].strip()  # first IP = client
+    return ip
 
 # wrapper to handle/catch keypresses from the physical keyboard - letters and backspace only
 
@@ -397,7 +408,9 @@ def pressed_backspace(backspace_flag, my_letters, ids, completed_word_index):
     Output('chart_histro', 'figure', allow_duplicate=True),
     Output("completed_word_index", "data"),   
     Output("status_output", "children", allow_duplicate=True),  
-    Output("completed", "data"),    
+    Output("completed", "data"),  
+    Output("modal", "is_open"), 
+    Output("modal_body", "children"),
     Input("enter_flag", "data"),   
     State("my_letters", "data"),    
     State('my_words', 'data'),     
@@ -415,13 +428,13 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
     if (enter_flag != 1):
         #print("Enter flag was found to be <> 1, so doing nothing")        
         enter_flag = 0
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update, False, no_update
 
     enter_flag = 0
 
     if (len(my_letters) == 0) or (len(my_letters) % 5 != 0): # check if a word is actually fully entered
         #print("Incomplete/no word found, so doing nothing")
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update, False, no_update
 
     # check if this completed word is a new completed word, or is still last word completed word
     new_full_word_index = int((len(my_letters) // 5)-1)
@@ -429,7 +442,7 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
     #print(completed_word_index)
     if new_full_word_index <= completed_word_index:
         #print("Enter was pressed, but there's no new word")
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update       
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update, False, no_update       
 
     last_guess_word = my_letters[-5:]
     # print(last_guess_word)
@@ -440,9 +453,35 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
     # print(all_words_loose)
     # print(last_guess_word.lower())
 
+    if last_guess_word.lower() == 'zffff': #show feedback
+
+        FILE_PATH = pathlib.Path("feedback.txt").expanduser()
+
+        feedback = ''
+        try:
+            feedback = FILE_PATH.read_text(encoding="utf-8", errors="replace")
+        except Exception as e:
+            print(f"Error opening file: {e}")
+
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update, True, feedback   
+
+    if last_guess_word.lower() == 'zvvvv': #show visits
+
+        FILE_PATH = pathlib.Path("visits.txt").expanduser()
+
+        visits = ''
+        try:
+            visits = FILE_PATH.read_text(encoding="utf-8", errors="replace")
+        except Exception as e:
+            print(f"Error opening file: {e}")
+
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "", no_update, True, visits   
+
+
+
     if last_guess_word.lower() not in all_words_loose:
         #print(f"{last_guess_word} is probably not even a word!")
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "That is not a word!", no_update         
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "That is not a word!", no_update, False, no_update         
 
     completed_word_index += 1 # finished a word
     last_guess_colors = []
@@ -474,7 +513,7 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
 
     # the word was correct, don't go any further
     if green_counter == 5:
-        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "You found it! (Refresh to restart)", 1         
+        return all_style, no_update, enter_flag, no_update, no_update, no_update, no_update, no_update, no_update, no_update, "You found it! (Refresh to restart)", 1, False, no_update         
         
     # highlight the next row to guess
     all_style = []
@@ -539,7 +578,7 @@ def pressed_enter(enter_flag, my_letters, unusedListRaw, ids, completed_word_ind
 
     headerWordCount = f"Word Count: {len(unusedListRaw)}"
 
-    return all_style, unusedListRaw, enter_flag, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro, completed_word_index, "", no_update
+    return all_style, unusedListRaw, enter_flag, myList, headerWordCount, suggestBest, suggestWorst, chart_distro, chart_histro, completed_word_index, "", no_update, False, no_update
 
 # change/toggle the color of the grid on click
 # removing this in favor of the client-side callback below this
@@ -632,14 +671,30 @@ def send_feedback(click, feedback):
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")    
 
+    ip_address = get_client_ip()
+    location_info = ip_location(ip_address)
+
     # Append text to a file
     with open("feedback.txt", "a") as f:
         f.write(f"visit datetime: {dt_string}:\n")
-        f.write(f"ip address: {request.remote_addr}\n")
+        f.write(f"ip address: {ip_address}\n")
+        f.write(f"{location_info}\n")
         f.write(f"{feedback}\n\n")
 
     return "", "Thanks!"
 
+
+def ip_location(ip):
+    try:
+        resp = requests.get(f"http://ip-api.com/json/{ip}", timeout=3)
+        data = resp.json()
+
+        if data.get("status") == "success":
+            return f"{data['query']} - {data['country']}, {data['regionName']}, {data['city']}"
+        else:
+            return f"{ip} - Location lookup failed"
+    except Exception as e:
+        return f"{ip} - Error: {e}"
     
 # # This JS will capture keydown events on the page and write them to a store
 # app.clientside_callback(
